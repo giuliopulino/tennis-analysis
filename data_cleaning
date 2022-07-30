@@ -1,0 +1,62 @@
+CREATE TABLE atp_matches
+SELECT ATP, Location, Tournament, STR_TO_DATE(Date, "%d/%m/%y") AS match_date, Series, Court, Surface, Round, `Best of`AS bestOf, Winner, Loser, WRank, LRank, W1, L1, W2, L2, Comment, REPLACE(B365W, ",", ".") AS B365W, REPLACE(B365L, ",", ".") AS B365L, REPLACE(PSW, ",", ".") AS PSW, REPLACE(PSL, ",", ".") AS PSL
+FROM atp_matches_2010
+UNION ALL
+SELECT ATP, Location, Tournament, STR_TO_DATE(Date, "%d/%m/%y") AS match_date, Series, Court, Surface, Round, `Best of`AS bestOf, Winner, Loser, WRank, LRank, W1, L1, W2, L2, Comment, REPLACE(B365W, ",", ".") AS B365W, REPLACE(B365L, ",", ".") AS B365L, REPLACE(PSW, ",", ".") AS PSW, REPLACE(PSL, ",", ".") AS PSL
+FROM atp_matches_2011
+UNION ALL
+SELECT ATP, Location, Tournament, STR_TO_DATE(Date, "%d/%m/%y") AS match_date, Series, Court, Surface, Round, `Best of`AS bestOf, Winner, Loser, WRank, LRank, W1, L1, W2, L2, Comment, REPLACE(B365W, ",", ".") AS B365W, REPLACE(B365L, ",", ".") AS B365L, REPLACE(PSW, ",", ".") AS PSW, REPLACE(PSL, ",", ".") AS PSL
+FROM atp_matches_2012
+UNION ALL
+SELECT ATP, Location, Tournament, STR_TO_DATE(Date, "%d/%m/%y") AS match_date, Series, Court, Surface, Round, `Best of`AS bestOf, Winner, Loser, WRank, LRank, W1, L1, W2, L2, Comment, REPLACE(B365W, ",", ".") AS B365W, REPLACE(B365L, ",", ".") AS B365L, REPLACE(PSW, ",", ".") AS PSW, REPLACE(PSL, ",", ".") AS PSL
+FROM atp_matches_2013
+UNION ALL
+SELECT ATP, Location, Tournament, STR_TO_DATE(Date, "%d/%m/%y") AS match_date, Series, Court, Surface, Round, `Best of`AS bestOf, Winner, Loser, WRank, LRank, W1, L1, W2, L2, Comment, REPLACE(B365W, ",", ".") AS B365W, REPLACE(B365L, ",", ".") AS B365L, REPLACE(PSW, ",", ".") AS PSW, REPLACE(PSL, ",", ".") AS PSL
+FROM atp_matches_2014
+UNION ALL
+SELECT ATP, Location, Tournament, STR_TO_DATE(Date, "%d/%m/%y") AS match_date, Series, Court, Surface, Round, `Best of`AS bestOf, Winner, Loser, WRank, LRank, W1, L1, W2, L2, Comment, REPLACE(B365W, ",", ".") AS B365W, REPLACE(B365L, ",", ".") AS B365L, REPLACE(PSW, ",", ".") AS PSW, REPLACE(PSL, ",", ".") AS PSL
+FROM atp_matches_2015
+UNION ALL
+SELECT ATP, Location, Tournament, STR_TO_DATE(Date, "%d/%m/%y") AS match_date, Series, Court, Surface, Round, `Best of`AS bestOf, Winner, Loser, WRank, LRank, W1, L1, W2, L2, Comment, REPLACE(B365W, ",", ".") AS B365W, REPLACE(B365L, ",", ".") AS B365L, REPLACE(PSW, ",", ".") AS PSW, REPLACE(PSL, ",", ".") AS PSL
+FROM atp_matches_2016
+UNION ALL
+SELECT ATP, Location, Tournament, STR_TO_DATE(Date, "%d/%m/%y") AS match_date, Series, Court, Surface, Round, `Best of`AS bestOf, Winner, Loser, WRank, LRank, W1, L1, W2, L2, Comment, REPLACE(B365W, ",", ".") AS B365W, REPLACE(B365L, ",", ".") AS B365L, REPLACE(PSW, ",", ".") AS PSW, REPLACE(PSL, ",", ".") AS PSL
+FROM atp_matches_2017
+UNION ALL
+SELECT ATP, Location, Tournament, STR_TO_DATE(Date, "%d/%m/%y") AS match_date, Series, Court, Surface, Round, `Best of`AS bestOf, Winner, Loser, WRank, LRank, W1, L1, W2, L2, Comment, REPLACE(B365W, ",", ".") AS B365W, REPLACE(B365L, ",", ".") AS B365L, REPLACE(PSW, ",", ".") AS PSW, REPLACE(PSL, ",", ".") AS PSL
+FROM atp_matches_2018
+UNION ALL
+SELECT ATP, Location, Tournament, STR_TO_DATE(Date, "%d/%m/%y") AS match_date, Series, Court, Surface, Round, `Best of`AS bestOf, Winner, Loser, WRank, LRank, W1, L1, W2, L2, Comment, REPLACE(B365W, ",", ".") AS B365W, REPLACE(B365L, ",", ".") AS B365L, REPLACE(PSW, ",", ".") AS PSW, REPLACE(PSL, ",", ".") AS PSL
+FROM atp_matches_2019
+UNION ALL
+SELECT ATP, Location, Tournament, STR_TO_DATE(Date, "%d/%m/%y") AS match_date, Series, Court, Surface, Round, `Best of`AS bestOf, Winner, Loser, WRank, LRank, W1, L1, W2, L2, Comment, REPLACE(B365W, ",", ".") AS B365W, REPLACE(B365L, ",", ".") AS B365L, REPLACE(PSW, ",", ".") AS PSW, REPLACE(PSL, ",", ".") AS PSL
+FROM atp_matches_2020
+UNION ALL
+SELECT ATP, Location, Tournament, STR_TO_DATE(Date, "%d/%m/%y") AS match_date, Series, Court, Surface, Round, `Best of`AS bestOf, Winner, Loser, WRank, LRank, W1, L1, W2, L2, Comment, REPLACE(B365W, ",", ".") AS B365W, REPLACE(B365L, ",", ".") AS B365L, REPLACE(PSW, ",", ".") AS PSW, REPLACE(PSL, ",", ".") AS PSL
+FROM atp_matches_2021;
+
+
+
+
+
+-- if walkover we'll have our stake back, so we can remove these data
+DELETE FROM atp_matches WHERE comment = "Walkover";
+
+
+-- Remvinf non completed matches, or matches without odds
+DELETE FROM atp_matches WHERE comment = "Disqualified"; -- 2 rows
+DELETE FROM atp_matches WHERE comment = "Sched"; -- 1 row
+DELETE FROM atp_matches WHERE comment = "Awarded"; -- 2 rows
+DELETE FROM atp_matches WHERE PSW = ""; -- 157 rows
+DELETE FROM atp_matches WHERE B365W = ""; -- 51 rows
+
+-- fix mispelling data
+UPDATE atp_matches SET comment = "Retired" WHERE comment = "Rrtired"; -- 1 row
+
+-- as per pinnacle rules in case of retirement, the bet it's still valid if the 1st set is completed otherwise il will be voided
+-- Knowing that: A set is won by the first player to win 6 games, with a margin of at least 2 games over the other side (e.g. 6–3 or 7–5). 
+-- removing all rows where the 1st set it's not completed
+DELETE FROM atp_matches WHERE (W1 < 6 AND L1 < 6) AND W2 = ""; -- 166 rows
+DELETE FROM atp_matches WHERE W1 = 6 AND L1 = 5 AND W2 = ""; -- 6 rows
+DELETE FROM atp_matches WHERE W1 = 5 AND L1 = 6 AND W2 = ""; -- 2 rows
+
