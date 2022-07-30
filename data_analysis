@@ -1,0 +1,65 @@
+-- calculate total number of matches
+SELECT COUNT(*) AS total_matches
+FROM atp_matches;
+
+-- calculate margin
+SELECT
+	ROUND(AVG((100 / B365W) + (100 / B365L)),2) AS bet365_margin,
+    ROUND(AVG((100 / PSW) + (100 / PSL)),2) AS pinnacle_margin
+FROM atp_matches;
+
+
+
+-- calculate ROI knowing in advance the result of the match
+SELECT
+	ROUND(SUM(10 * B365W),2) AS bet365_winnings,
+    ROUND(SUM(10 * PSW),2) AS pinnacle_winnings
+FROM atp_matches;
+
+-- bets on fav player odd <= 1.30   profit: -1100.30
+SELECT
+	10 * COUNT(CASE WHEN PSW <= 1.30 OR PSL <= 1.30 THEN 1 ELSE NULL END) AS total_stake,
+    ROUND(SUM(CASE WHEN PSW <= 1.30 THEN 10 * PSW ELSE NULL END),2) AS total_winnings,
+    ROUND(SUM(CASE WHEN PSW <= 1.30 THEN 10 * PSW ELSE NULL END),2) - (10 * COUNT(CASE WHEN PSW <= 1.30 OR PSL <= 1.30 THEN 1 ELSE NULL END)) AS profit
+FROM atp_matches;
+
+-- grouping by year
+SELECT
+    YEAR(match_date) AS yr,
+    10 * COUNT(CASE WHEN PSW <= 1.30 OR PSL <= 1.30 THEN 1 ELSE NULL END) AS total_stake,
+    ROUND(SUM(CASE WHEN PSW <= 1.30 THEN 10 * PSW ELSE NULL END),2) AS total_winnings,
+    ROUND(SUM(CASE WHEN PSW <= 1.30 THEN 10 * PSW ELSE NULL END),2) - (10 * COUNT(CASE WHEN PSW <= 1.30 OR PSL <= 1.30 THEN 1 ELSE NULL END)) AS profit
+FROM atp_matches
+GROUP BY 1
+ORDER BY 1 DESC;
+
+
+
+
+-- bets on fav player odd <= 1.10   profit: -273.95
+SELECT
+	10 * COUNT(CASE WHEN PSW <= 1.10 OR PSL <= 1.10 THEN 1 ELSE NULL END) AS total_stake,
+    ROUND(SUM(CASE WHEN PSW <= 1.10 THEN 10 * PSW ELSE NULL END),2) AS total_winnings,
+    ROUND(SUM(CASE WHEN PSW <= 1.10 THEN 10 * PSW ELSE NULL END) - (10 * COUNT(CASE WHEN PSW <= 1.10 OR PSL <= 1.10 THEN 1 ELSE NULL END)),2) AS profit
+FROM atp_matches;
+
+-- bets on fav player no matter what the odds are  profit: -5425.55
+SELECT
+	10 * COUNT(CASE WHEN PSW < PSL OR PSL < PSW THEN 1 ELSE NULL END) AS total_stake,
+    ROUND(SUM(CASE WHEN PSW < PSL THEN 10 * PSW ELSE NULL END),2) AS winnings,
+    ROUND(SUM(CASE WHEN PSW < PSL THEN 10 * PSW ELSE NULL END) - 10 * COUNT(CASE WHEN PSW < PSL OR PSL < PSW THEN 1 ELSE NULL END),2) AS profit
+FROM atp_matches;
+
+
+
+-- bets on the fav player who is in top10 vs a player in 20th or more position   profit:  - 1163.79
+SELECT
+	10 * COUNT(CASE WHEN (WRank <= 10 AND LRank >= 20) OR (WRank >= 20 AND LRank <= 10) THEN 1 ELSE NULL END) AS total_stake,
+    ROUND(SUM(CASE WHEN WRank <= 10 AND LRank >= 20 THEN 10 * PSW ELSE NULL END),2) AS total_winnings,
+    ROUND(SUM(CASE WHEN WRank <= 10 AND LRank >= 20 THEN 10 * PSW ELSE NULL END)
+		- 10 * COUNT(CASE WHEN (WRank <= 10 AND LRank >= 20) OR (WRank >= 20 AND LRank <= 10) THEN 1 ELSE NULL END),2) AS profit
+FROM atp_matches;
+
+
+
+
